@@ -1,0 +1,6 @@
+export const Constants = {
+  ERROR_CODES: {
+    CONFLICT_USERNAME: 'CONFLICT_USERNAME',
+    CONFLICT_EMAIL: 'CONFLICT_EMAIL',
+  },
+};

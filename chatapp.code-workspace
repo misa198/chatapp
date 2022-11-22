@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "path": "docker"
+    },
+    {
+      "path": "workspace/client"
+    },
+    {
+      "path": "workspace/api"
+    },
+    {
+      "path": "docs"
+    }
+  ]
+}

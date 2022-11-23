@@ -1,6 +1,8 @@
 'use strict';
 
 var dbm;
+var type;
+var seed;
 
 /**
  * We receive the dbmigrate dependency from dbmigrate initially.
@@ -71,7 +73,7 @@ exports.up = async function (db) {
   `);
 };
 
-exports.down = function () {
+exports.down = function (db) {
   return null;
 };
 

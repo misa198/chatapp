@@ -1,12 +1,22 @@
 import { Constants } from '@/common/Constants';
+import { LoginReq } from '@/dtos/auth/LoginReq';
 import { RegisterReq } from '@/dtos/auth/RegisterReq';
+import { UserPayload } from '@/modals/UserPayload';
 import { UserRepository } from '@/repositories/user.repository';
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly jwtService: JwtService,
+  ) {}
 
   public async register(body: RegisterReq) {
     const foundUserByEmail = await this.userRepository.findOne({
@@ -38,6 +48,30 @@ export class UserService {
       firstName: body.firstName,
     });
   }
+
+  public async login(body: LoginReq) {
+    const foundUser = await this.findUserByEmailOrUsername(body.user);
+    if (!foundUser) throw new UnauthorizedException();
+    const payload: UserPayload = {
+      id: foundUser.id,
+    };
+    const verified = bcrypt.compareSync(body.password, foundUser.password);
+    if (!verified) throw new UnauthorizedException();
+    const token = this.jwtService.sign(payload);
+    return { token };
+  }
+
+  private findUserByEmailOrUsername = async (user: string) =>
+    this.userRepository.findOne({
+      where: [
+        {
+          email: user,
+        },
+        {
+          username: user,
+        },
+      ],
+    });
 
   private async hashPassword(password: string) {
     const rounds = 10;

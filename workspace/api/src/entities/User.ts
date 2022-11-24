@@ -38,6 +38,11 @@ export class User {
   isVerified: boolean;
 
   @Column({
+    name: 'profile_picture_id',
+  })
+  profilePictureId: string;
+
+  @Column({
     name: 'created_at',
   })
   createdAt: Date;

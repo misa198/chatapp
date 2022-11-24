@@ -44,6 +44,7 @@ exports.up = async function (db) {
       first_name VARCHAR(255) NOT NULL,
       last_name VARCHAR(255) NOT NULL,
       password VARCHAR(255) NOT NULL,
+      profile_picture_id UUID,
       is_verified BOOLEAN NOT NULL DEFAULT FALSE,
       created_at TIMESTAMP WITHOUT TIME ZONE default (now() at time zone 'utc'),
       updated_at TIMESTAMP WITHOUT TIME ZONE default (now() at time zone 'utc')

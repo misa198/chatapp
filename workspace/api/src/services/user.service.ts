@@ -2,6 +2,9 @@ import { Constants } from '@/common/Constants';
 import { LoginReq } from '@/dtos/auth/LoginReq';
 import { MeRes } from '@/dtos/auth/MeRes';
 import { RegisterReq } from '@/dtos/auth/RegisterReq';
+import { RequestResetPasswordReq } from '@/dtos/auth/RequestResetPasswordReq';
+import { ResetPasswordReq } from '@/dtos/auth/ResetPasswordReq';
+import { ResetPasswordPayload } from '@/modals/ResetPasswordPayload';
 import { UserPayload } from '@/modals/UserPayload';
 import { AssetRepository } from '@/repositories/asset.repository';
 import { UserRepository } from '@/repositories/user.repository';
@@ -11,8 +14,10 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class UserService {
@@ -20,6 +25,7 @@ export class UserService {
     private readonly userRepository: UserRepository,
     private readonly assetRepository: AssetRepository,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   public async register(body: RegisterReq) {
@@ -77,6 +83,66 @@ export class UserService {
       return new MeRes(user, profilePicture.uri);
     }
     return new MeRes(user);
+  }
+
+  public async updatePassword(id: string, password: string) {
+    const hashedPassword = await this.hashPassword(password);
+    await this.userRepository.update({ id }, { password: hashedPassword });
+  }
+
+  public async requestResetPassword(body: RequestResetPasswordReq) {
+    const foundUser = await this.findUserByEmailOrUsername(body.user);
+    if (!foundUser) throw new NotFoundException();
+    const token = jwt.sign(
+      {
+        id: foundUser.id,
+      },
+      this.configService.get('JWT_RESET_PASSWORD_SECRET'),
+      {
+        expiresIn: this.configService.get('JWT_RESET_PASSWORD_EXPIRES_IN'),
+      },
+    );
+    return { token };
+  }
+
+  public async resetPassword(body: ResetPasswordReq) {
+    try {
+      const payload = jwt.verify(
+        body.token,
+        this.configService.get('JWT_RESET_PASSWORD_SECRET'),
+      ) as ResetPasswordPayload;
+      await this.updatePassword(payload.id, body.password);
+    } catch (e) {
+      throw new UnauthorizedException();
+    }
+  }
+
+  public async requestVerify(id: string) {
+    const token = jwt.sign(
+      {
+        id,
+      },
+      this.configService.get('JWT_VERIFY_EMAIL_SECRET'),
+      {
+        expiresIn: this.configService.get('JWT_VERIFY_EMAIL_EXPIRES_IN'),
+      },
+    );
+    return { token };
+  }
+
+  public async verify(token: string) {
+    try {
+      const payload = jwt.verify(
+        token,
+        this.configService.get('JWT_VERIFY_EMAIL_SECRET'),
+      ) as UserPayload;
+      await this.userRepository.update(
+        { id: payload.id },
+        { isVerified: true },
+      );
+    } catch (e) {
+      throw new UnauthorizedException();
+    }
   }
 
   private findUserByEmailOrUsername = async (user: string) =>

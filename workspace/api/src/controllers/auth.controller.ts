@@ -31,7 +31,7 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('/password/update')
+  @Post('/password/update')
   public async updatePassword(
     @CurrentUser() user: UserPayload,
     @Body() body: UpdatePasswordReq,
@@ -39,7 +39,7 @@ export class AuthController {
     return this.userService.updatePassword(user.id, body.password);
   }
 
-  @Get('/password/reset')
+  @Post('/password/reset-request')
   public async requestResetPassword(@Body() body: RequestResetPasswordReq) {
     return this.userService.requestResetPassword(body);
   }

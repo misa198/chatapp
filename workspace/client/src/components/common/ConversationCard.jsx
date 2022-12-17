@@ -1,6 +1,6 @@
 const ConversationCard = () => {
   return (
-    <div className="w-full px-3 py-2 flex cursor-pointer rounded-md hover:bg-gray-200 transition">
+    <div className="w-full px-3 py-2 flex cursor-pointer rounded-md hover:bg-gray-200 transition select-none">
       <img
         src="https://avatars.githubusercontent.com/u/51451216?v=4"
         alt="avatar"

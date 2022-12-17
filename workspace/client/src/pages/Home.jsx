@@ -1,5 +1,7 @@
+import Conversation from "@/components/common/Conversation.jsx";
+
 const Home = () => {
-  return <>sdcsdc</>;
+  return <Conversation />;
 };
 
 export default Home;

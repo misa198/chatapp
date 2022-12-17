@@ -1,5 +1,6 @@
 import { IconEdit } from "@tabler/icons";
 import IconButton from "@/components/common/IconButton";
+import ConversationList from "@/components/common/ConversationList";
 
 const ChatSideBar = () => {
   return (
@@ -17,7 +18,7 @@ const ChatSideBar = () => {
           placeholder="Search a conversation"
         />
       </div>
-      <div className="flex-1 w-full"></div>
+      <ConversationList />
     </div>
   );
 };

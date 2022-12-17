@@ -1,5 +1,7 @@
+import PrivateLayout from "@/components/layouts/ChatLayout";
 import { useRoutes } from "react-router-dom";
 import AuthRoute from "./AuthRoute";
+import PrivateRoute from "./PrivateRoute";
 
 export const router = [
   // Auth router
@@ -15,11 +17,31 @@ export const router = [
       },
       {
         path: "register",
-        element: <AuthRoute component={() => import("@/pages/auth/Register")} />,
+        element: (
+          <AuthRoute component={() => import("@/pages/auth/Register")} />
+        ),
       },
       {
         path: "forgot-password",
-        element: <AuthRoute component={() => import("@/pages/auth/ForgotPassword")} />,
+        element: (
+          <AuthRoute component={() => import("@/pages/auth/ForgotPassword")} />
+        ),
+      },
+    ],
+  },
+
+  // Private layout
+  {
+    path: "c",
+    element: (
+      <PrivateLayout
+        component={() => import("@/components/layouts/ChatLayout")}
+      />
+    ),
+    children: [
+      {
+        path: "",
+        element: <PrivateRoute component={() => import("@/pages/Home")} />,
       },
     ],
   },

@@ -1,24 +1,48 @@
+import { useFormik } from "formik";
 import { Link } from "react-router-dom";
+import * as yup from "yup";
+
+const validationSchema = yup.object().shape({
+  email: yup.string().email().required(),
+  password: yup.string().required(),
+});
 
 const ForgotPassword = () => {
+  const formik = useFormik({
+    validationSchema,
+    initialValues: {
+      email: "",
+    },
+    validateOnChange: true,
+    onSubmit: (values) => {
+      console.log(values);
+    },
+  });
+
   return (
-    <form class="w-full">
+    <form className="w-full" onSubmit={formik.handleSubmit}>
       <h3 className="mb-6 text-2xl text-center font-bold text-gray-800">
         Forgot password
       </h3>
-
-      <div class="mb-4">
+      <div className="mb-4">
         <input
-          class="appearance-none border rounded w-full py-2 px-3 focus:outline-none"
+          className="appearance-none border rounded w-full py-2 px-3 focus:outline-none"
           id="email"
           type="text"
-          placeholder="email"
+          placeholder="Email"
+          name="email"
+          onChange={formik.handleChange}
         />
+        {formik.errors.email && formik.touched.email && (
+          <span className="text-xs text-red-600 ml-1">
+            {formik.errors.email}
+          </span>
+        )}
       </div>
       <div className="w-full">
         <button
-          class="shadow bg-primary focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded w-full"
-          type="button"
+          className="shadow bg-primary focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded w-full"
+          type="submit"
         >
           Submit
         </button>

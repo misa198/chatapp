@@ -1,27 +1,59 @@
+import { useFormik } from "formik";
 import { Link } from "react-router-dom";
+import * as yup from "yup";
+
+const validationSchema = yup.object().shape({
+  user: yup.string().required(),
+  password: yup.string().required(),
+});
 
 const Login = () => {
+  const formik = useFormik({
+    validationSchema,
+    initialValues: {
+      user: "",
+      password: "",
+    },
+    validateOnChange: true,
+    onSubmit: (values) => {
+      console.log(values);
+    },
+  });
+
   return (
-    <form class="w-full">
+    <form className="w-full" onSubmit={formik.handleSubmit}>
       <h3 className="mb-6 text-2xl text-center font-bold text-gray-800">
         Login
       </h3>
-
-      <div class="mb-4">
+      <div className="mb-4">
         <input
-          class="appearance-none border rounded w-full py-2 px-3 focus:outline-none"
+          className="appearance-none border rounded w-full py-2 px-3 focus:outline-none"
           id="user"
           type="text"
           placeholder="Username or email"
+          name="user"
+          onChange={formik.handleChange}
         />
+        {formik.errors.user && formik.touched.user && (
+          <span className="text-xs text-red-600 ml-1">
+            {formik.errors.user}
+          </span>
+        )}
       </div>
-      <div class="mb-2">
+      <div className="mb-2">
         <input
-          class="appearance-none border rounded w-full py-2 px-3 focus:outline-none"
+          className="appearance-none border rounded w-full py-2 px-3 focus:outline-none"
           id="password"
           type="text"
           placeholder="Password"
+          name="password"
+          onChange={formik.handleChange}
         />
+        {formik.errors.password && formik.touched.password && (
+          <span className="text-xs text-red-600 ml-1">
+            {formik.errors.password}
+          </span>
+        )}
       </div>
       <div className="text-right mb-2">
         <Link to="/auth/forgot-password">
@@ -30,8 +62,8 @@ const Login = () => {
       </div>
       <div className="w-full">
         <button
-          class="shadow bg-primary focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded w-full"
-          type="button"
+          className="shadow bg-primary focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded w-full"
+          type="submit"
         >
           Submit
         </button>

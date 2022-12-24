@@ -1,6 +1,7 @@
-import { IconSettings2, IconEdit } from "@tabler/icons";
+import { IconUser, IconEdit } from "@tabler/icons";
 import IconButton from "@/components/common/IconButton";
 import ConversationList from "@/components/common/ConversationList";
+import { Link } from "react-router-dom";
 
 const ChatSideBar = () => {
   return (
@@ -8,12 +9,16 @@ const ChatSideBar = () => {
       <div className="w-full flex justify-between items-center p-4">
         <h3 className="text-2xl font-bold">Chat</h3>
         <div className="flex">
-          <IconButton className="bg-gray-100 mr-3">
-            <IconEdit size={20} />
-          </IconButton>
-          <IconButton className="bg-gray-100">
-            <IconSettings2 size={20} />
-          </IconButton>
+          <Link to="/c/new">
+            <IconButton className="bg-gray-100 mr-3">
+              <IconEdit size={20} />
+            </IconButton>
+          </Link>
+          <Link to="/account">
+            <IconButton className="bg-gray-100">
+              <IconUser size={20} />
+            </IconButton>
+          </Link>
         </div>
       </div>
       <div className="px-4 pb-4">

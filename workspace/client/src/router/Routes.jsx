@@ -34,7 +34,7 @@ export const router = [
   {
     path: "c",
     element: (
-      <PrivateLayout
+      <PrivateRoute
         component={() => import("@/components/layouts/ChatLayout")}
       />
     ),
@@ -42,6 +42,25 @@ export const router = [
       {
         path: "",
         element: <PrivateRoute component={() => import("@/pages/Home")} />,
+      },
+    ],
+  },
+
+  {
+    path: "account",
+    element: (
+      <PrivateRoute
+        component={() => import("@/components/layouts/AccountLayout")}
+      />
+    ),
+    children: [
+      {
+        path: "",
+        element: <PrivateRoute component={() => import("@/pages/Account")} />,
+      },
+      {
+        path: "password",
+        element: <PrivateRoute component={() => import("@/pages/Password")} />,
       },
     ],
   },

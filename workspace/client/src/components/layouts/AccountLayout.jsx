@@ -10,7 +10,7 @@ const AccountLayout = () => {
   const { pathname } = useLocation();
 
   return (
-    <div className="w-screen min-h-screen">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4">
         <div className="mt-14 mb-8 flex items-center">
           <Link to="/c">

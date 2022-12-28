@@ -1,6 +1,8 @@
 import { useFormik } from "formik";
 import { Link } from "react-router-dom";
 import * as yup from "yup";
+import { useDispatch } from "react-redux";
+import { loginThunk } from "@/app/store/authSlice";
 
 const validationSchema = yup.object().shape({
   user: yup.string().required(),
@@ -8,6 +10,8 @@ const validationSchema = yup.object().shape({
 });
 
 const Login = () => {
+  const dispatch = useDispatch();
+
   const formik = useFormik({
     validationSchema,
     initialValues: {
@@ -16,7 +20,7 @@ const Login = () => {
     },
     validateOnChange: true,
     onSubmit: (values) => {
-      console.log(values);
+      dispatch(loginThunk(values));
     },
   });
 
@@ -44,7 +48,7 @@ const Login = () => {
         <input
           className="appearance-none border rounded w-full py-2 px-3 focus:outline-none"
           id="password"
-          type="text"
+          type="password"
           placeholder="Password"
           name="password"
           onChange={formik.handleChange}

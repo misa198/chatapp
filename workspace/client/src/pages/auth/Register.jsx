@@ -1,6 +1,8 @@
 import { useFormik } from "formik";
 import { Link } from "react-router-dom";
 import * as yup from "yup";
+import { useDispatch } from "react-redux";
+import { registerThunk } from "@/app/store/authSlice";
 
 const validationSchema = yup.object().shape({
   firstName: yup.string().max(255).required(),
@@ -15,6 +17,8 @@ const validationSchema = yup.object().shape({
 });
 
 const Register = () => {
+  const dispatch = useDispatch();
+
   const formik = useFormik({
     validationSchema,
     initialValues: {
@@ -26,6 +30,9 @@ const Register = () => {
       confirmPassword: "",
     },
     validateOnChange: true,
+    onSubmit: (values) => {
+      dispatch(registerThunk(values));
+    },
   });
 
   return (

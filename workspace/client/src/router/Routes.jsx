@@ -1,5 +1,4 @@
-import PrivateLayout from "@/components/layouts/ChatLayout";
-import { useRoutes } from "react-router-dom";
+import { Navigate, useRoutes } from "react-router-dom";
 import AuthRoute from "./AuthRoute";
 import PrivateRoute from "./PrivateRoute";
 
@@ -63,6 +62,11 @@ export const router = [
         element: <PrivateRoute component={() => import("@/pages/Password")} />,
       },
     ],
+  },
+
+  {
+    path: "",
+    element: <Navigate to="/c" />,
   },
 ];
 

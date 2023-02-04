@@ -7,6 +7,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './modules/user.module';
+import { MessageModule } from '@/modules/message.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { UserModule } from './modules/user.module';
       }),
     }),
     UserModule,
+    MessageModule,
   ],
   controllers: [],
   providers: [],

@@ -5,6 +5,7 @@ import { CurrentUser } from '@/security/current-user.decorator';
 import { UserPayload } from '@/modals/UserPayload';
 import { MessageService } from '@/services/message.service';
 import { CreateConversationReq } from '@/dtos/messages/CreateConversationReq';
+import { CreateMessageReq } from '@/dtos/messages/CreateMessageReq';
 
 @Controller('conversations')
 export class MessageController {
@@ -42,8 +43,12 @@ export class MessageController {
   public sendMessage(
     @CurrentUser() user: UserPayload,
     @Param('conversationId') conversationId: string,
-    @Body('message') message: string,
+    @Body() body: CreateMessageReq,
   ) {
-    return this.messageService.createMessage(user.id, conversationId, message);
+    return this.messageService.createMessage(
+      user.id,
+      conversationId,
+      body.content,
+    );
   }
 }

@@ -1,7 +1,9 @@
-import Conversation from "@/components/common/Conversation.jsx";
-
 const Home = () => {
-  return <Conversation />;
+  return (
+    <div className="w-full h-full flex justify-center items-center">
+      <b>Select a conversation to start chatting</b>
+    </div>
+  );
 };
 
 export default Home;

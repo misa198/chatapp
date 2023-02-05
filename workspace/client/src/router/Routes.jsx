@@ -42,6 +42,10 @@ export const router = [
         path: "",
         element: <PrivateRoute component={() => import("@/pages/Home")} />,
       },
+      {
+        path: ":id",
+        element: <PrivateRoute component={() => import("@/pages/Chat")} />,
+      },
     ],
   },
 

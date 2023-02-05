@@ -64,6 +64,10 @@ export class UserService {
     if (!foundUser) throw new UnauthorizedException();
     const payload: UserPayload = {
       id: foundUser.id,
+      email: foundUser.email,
+      username: foundUser.username,
+      lastName: foundUser.lastName,
+      firstName: foundUser.firstName,
     };
     const verified = bcrypt.compareSync(body.password, foundUser.password);
     if (!verified) throw new UnauthorizedException();

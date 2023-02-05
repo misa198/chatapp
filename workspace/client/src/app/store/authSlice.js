@@ -9,6 +9,7 @@ export const loginThunk = createAsyncThunk("auth/login", async (params) => {
   return data;
 });
 
+
 export const registerThunk = createAsyncThunk(
   "auth/register",
   async (params) => {

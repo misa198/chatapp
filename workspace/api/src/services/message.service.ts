@@ -143,7 +143,7 @@ export class MessageService {
         conversationId,
       },
       order: {
-        createdAt: 'DESC',
+        createdAt: 'ASC',
       },
     });
   }

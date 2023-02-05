@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   listConversationsApi,
   listMessagesApi,
+  sendMessageApi,
 } from "@/app/apis/conversations";
 
 export const listConversationsThunk = createAsyncThunk(
@@ -20,13 +21,32 @@ export const listMessagesThunk = createAsyncThunk(
   }
 );
 
+export const sendMessageThunk = createAsyncThunk(
+  "conversations/sendMessage",
+  async (payload) => {
+    const { conversationId, message } = payload;
+    await sendMessageApi(conversationId, message);
+  }
+);
+
 const slice = createSlice({
   name: "conversations",
   initialState: {
+    currentConversationId: null,
     conversations: [],
     messages: [],
   },
-  reducers: {},
+  reducers: {
+    setConversationId(state, action) {
+      state.currentConversationId = action.payload;
+    },
+    addNewMessage(state, action) {
+      const message = action.payload;
+      if (message.conversationId === state.currentConversationId) {
+      }
+      state.messages.push(action.payload);
+    },
+  },
   extraReducers(builder) {
     builder.addCase(listConversationsThunk.fulfilled, (state, action) => {
       state.conversations = action.payload;
@@ -42,3 +62,4 @@ const slice = createSlice({
 });
 
 export default slice.reducer;
+export const { setConversationId, addNewMessage } = slice.actions;

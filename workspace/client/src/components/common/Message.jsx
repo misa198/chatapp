@@ -1,5 +1,6 @@
 import { getUser } from "@/common/utils";
 import { DEFAULT_PROFILE_IMAGE } from "@/common/constants";
+import { Tooltip } from "react-tooltip";
 
 const Message = ({ message }) => {
   const user = getUser();
@@ -7,9 +8,9 @@ const Message = ({ message }) => {
 
   return (
     <div
-      className={`w-full p-4 flex ${!isMine ? "justify-end" : "justify-start"}`}
+      className={`w-full p-4 flex ${isMine ? "justify-end" : "justify-start"}`}
     >
-      {isMine && (
+      {!isMine && (
         <div className="mr-4">
           <img
             src={DEFAULT_PROFILE_IMAGE}
@@ -18,11 +19,19 @@ const Message = ({ message }) => {
           />
         </div>
       )}
-      <div>
+      <div
+        className={`flex-1 flex ${isMine ? "flex-row-reverse" : "flex-row"}`}
+      >
+        <Tooltip place="top" type="dark" effect="solid" anchorId={message.id}>
+          <span className="text-xs">
+            {new Date(message.createdAt).toLocaleString()}
+          </span>
+        </Tooltip>
         <p
-          className={`text-sm p-2 rounded-xl ${
-            !isMine ? "bg-primary text-white" : "bg-gray-200"
+          className={`text-sm p-2 rounded-xl w-fit ${
+            isMine ? "bg-primary text-white" : "bg-gray-200"
           }`}
+          id={message.id}
         >
           {message.content}
         </p>

@@ -1,11 +1,21 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { EventsGateway } from '@/controllers/events.gateway';
-import { AuthGuard } from '@/security/auth.guard';
-import { CurrentUser } from '@/security/current-user.decorator';
-import { UserPayload } from '@/modals/UserPayload';
-import { MessageService } from '@/services/message.service';
 import { CreateConversationReq } from '@/dtos/messages/CreateConversationReq';
 import { CreateMessageReq } from '@/dtos/messages/CreateMessageReq';
+import { UserPayload } from '@/modals/UserPayload';
+import { AuthGuard } from '@/security/auth.guard';
+import { CurrentUser } from '@/security/current-user.decorator';
+import { MessageService } from '@/services/message.service';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('conversations')
 export class MessageController {
@@ -49,6 +59,22 @@ export class MessageController {
       user.id,
       conversationId,
       body.content,
+    );
+  }
+
+  // file upload
+  @Post('/:conversationId/upload')
+  @UseInterceptors(FileInterceptor('file'))
+  @UseGuards(AuthGuard)
+  public uploadFile(
+    @CurrentUser() user: UserPayload,
+    @Param('conversationId') conversationId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.messageService.createMessageWithFile(
+      user.id,
+      conversationId,
+      file,
     );
   }
 }

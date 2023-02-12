@@ -1,6 +1,7 @@
 import { getUser } from "@/common/utils";
 import { DEFAULT_PROFILE_IMAGE } from "@/common/constants";
 import { Tooltip } from "react-tooltip";
+import { isVideoUrl, isImageUrl } from "@/common/utils";
 
 const Message = ({ message }) => {
   const user = getUser();
@@ -27,14 +28,28 @@ const Message = ({ message }) => {
             {new Date(message.createdAt).toLocaleString()}
           </span>
         </Tooltip>
-        <p
-          className={`text-sm p-2 rounded-xl w-fit ${
-            isMine ? "bg-primary text-white" : "bg-gray-200"
-          }`}
-          id={message.id}
-        >
-          {message.content}
-        </p>
+        {isImageUrl(message.content) ? (
+          <img
+            src={message.content}
+            alt="message"
+            className="w-fit max-w-3xl rounded-lg border"
+          />
+        ) : isVideoUrl(message.content) ? (
+          <video
+            src={message.content}
+            className="w-fit max-w-3xl rounded-lg border"
+            controls
+          />
+        ) : (
+          <p
+            className={`text-sm p-2 rounded-xl w-fit ${
+              isMine ? "bg-primary text-white" : "bg-gray-200"
+            }`}
+            id={message.id}
+          >
+            {message.content}
+          </p>
+        )}
       </div>
     </div>
   );

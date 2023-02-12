@@ -3,6 +3,7 @@ import {
   listConversationsApi,
   listMessagesApi,
   sendMessageApi,
+  sendMessageWithFileApi,
 } from "@/app/apis/conversations";
 
 export const listConversationsThunk = createAsyncThunk(
@@ -26,6 +27,14 @@ export const sendMessageThunk = createAsyncThunk(
   async (payload) => {
     const { conversationId, message } = payload;
     await sendMessageApi(conversationId, message);
+  }
+);
+
+export const sendMessageWithFileThunk = createAsyncThunk(
+  "conversations/sendMessageWithFile",
+  async (payload) => {
+    const { conversationId, formData } = payload;
+    await sendMessageWithFileApi(conversationId, formData);
   }
 );
 

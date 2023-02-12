@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConversationUserRepository } from '@/repositories/conversation-user.repository';
 import { ConversationRepository } from '@/repositories/conversation';
 import { In, Not } from 'typeorm';
 import { UserRepository } from '@/repositories/user.repository';
 import { EventsGateway } from '@/controllers/events.gateway';
 import { MessageRepository } from '@/repositories/message.repository';
+import { S3Service } from './s3.service';
 
 @Injectable()
 export class MessageService {
@@ -14,6 +19,7 @@ export class MessageService {
     private readonly messageRepository: MessageRepository,
     private readonly userRepository: UserRepository,
     private readonly eventsGateway: EventsGateway,
+    private readonly s3Service: S3Service,
   ) {}
 
   public async listConversations(userId: string) {
@@ -171,6 +177,60 @@ export class MessageService {
     const message = await this.messageRepository.create({
       conversationId,
       content,
+      userId,
+    });
+    const savedMsg = await this.messageRepository.save(message);
+    const partnerIds = conversationUserIds.filter((id) => id !== userId);
+    partnerIds.forEach((partnerId) => {
+      const partnerRooms = this.eventsGateway.rooms.get(partnerId);
+      if (partnerRooms) {
+        partnerRooms.forEach((room) => {
+          this.eventsGateway.server.to(room).emit('message-new', savedMsg);
+        });
+      }
+    });
+    const userRooms = this.eventsGateway.rooms.get(userId);
+    if (userRooms) {
+      userRooms.forEach((room) => {
+        this.eventsGateway.server.to(room).emit('message-new', savedMsg);
+      });
+    }
+  }
+
+  public async createMessageWithFile(
+    userId: string,
+    conversationId: string,
+    file: Express.Multer.File,
+  ) {
+    if (!file) throw new BadRequestException('File is required');
+    // validate file must be an image/video and size must be less than 5MB
+    const fileExtension = file.originalname.split('.').pop();
+    if (!['jpg', 'jpeg', 'png', 'gif', 'mp4', 'mov'].includes(fileExtension)) {
+      throw new BadRequestException('Invalid file type');
+    }
+    // 5MB
+    console.log(file.size);
+    if (file.size > 5 * 1024 * 1024) {
+      throw new BadRequestException('File size must be less than 5MB');
+    }
+    const conversation = await this.conversationRepository.findOne({
+      where: {
+        id: conversationId,
+      },
+    });
+    if (!conversation) throw new NotFoundException('Conversation not found');
+    const conversationUsers = await this.conversationUserRepository.find({
+      where: {
+        conversationId,
+      },
+    });
+    const conversationUserIds = conversationUsers.map((cu) => cu.userId);
+    if (!conversationUserIds.includes(userId))
+      throw new NotFoundException('Conversation not found');
+    const uploadedFile = await this.s3Service.uploadFile(file);
+    const message = this.messageRepository.create({
+      conversationId,
+      content: uploadedFile,
       userId,
     });
     const savedMsg = await this.messageRepository.save(message);

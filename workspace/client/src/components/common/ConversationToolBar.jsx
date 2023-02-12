@@ -1,6 +1,9 @@
-import { sendMessageThunk } from "@/app/store/conversationsSlice";
-import { IconFileBarcode, IconPhoto, IconSend } from "@tabler/icons";
-import { useState, useRef } from "react";
+import {
+  sendMessageThunk,
+  sendMessageWithFileThunk,
+} from "@/app/store/conversationsSlice";
+import { IconPhoto, IconSend } from "@tabler/icons";
+import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const ConversationToolBar = () => {
@@ -10,6 +13,25 @@ const ConversationToolBar = () => {
     (state) => state.conversations.currentConversationId
   );
   const inputRef = useRef();
+  const fileInputRef = useRef();
+
+  const onClickFile = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const onChangeFile = (e) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+    dispatch(
+      sendMessageWithFileThunk({
+        conversationId,
+        formData,
+      })
+    );
+  };
 
   const onChangeContent = (e) => {
     setContent(e.target.value);
@@ -32,8 +54,18 @@ const ConversationToolBar = () => {
 
   return (
     <form className="w-full p-3 flex items-center border-t" onSubmit={onSubmit}>
-      <IconPhoto className="text-primary h-7 mr-2 cursor-pointer" />
-      <IconFileBarcode className="text-primary h-7 mr-1 cursor-pointer" />
+      <IconPhoto
+        className="text-primary h-7 mr-1 cursor-pointer"
+        onClick={onClickFile}
+      />
+      <input
+        type="file"
+        onChange={onChangeFile}
+        className="hidden"
+        ref={fileInputRef}
+        accept="image/*,video/*"
+        max-size="5242880"
+      />
 
       <input
         type="text"
